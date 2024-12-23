@@ -45,7 +45,6 @@ from .pipeline_pixart_alpha import (
     ASPECT_RATIO_1024_BIN,
 )
 
-
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
 if is_bs4_available():
@@ -53,7 +52,6 @@ if is_bs4_available():
 
 if is_ftfy_available():
     import ftfy
-
 
 ASPECT_RATIO_2048_BIN = {
     "0.25": [1024.0, 4096.0],
@@ -98,7 +96,6 @@ ASPECT_RATIO_2048_BIN = {
     "4.0": [4096.0, 1024.0],
 }
 
-
 EXAMPLE_DOC_STRING = """
     Examples:
         ```py
@@ -117,9 +114,10 @@ EXAMPLE_DOC_STRING = """
         ```
 """
 
+
 # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion_img2img.retrieve_latents
 def retrieve_latents(
-    encoder_output: torch.Tensor, generator: Optional[torch.Generator] = None, sample_mode: str = "sample"
+        encoder_output: torch.Tensor, generator: Optional[torch.Generator] = None, sample_mode: str = "sample"
 ):
     if hasattr(encoder_output, "latent_dist") and sample_mode == "sample":
         return encoder_output.latent_dist.sample(generator)
@@ -133,12 +131,12 @@ def retrieve_latents(
 
 # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.retrieve_timesteps
 def retrieve_timesteps(
-    scheduler,
-    num_inference_steps: Optional[int] = None,
-    device: Optional[Union[str, torch.device]] = None,
-    timesteps: Optional[List[int]] = None,
-    sigmas: Optional[List[float]] = None,
-    **kwargs,
+        scheduler,
+        num_inference_steps: Optional[int] = None,
+        device: Optional[Union[str, torch.device]] = None,
+        timesteps: Optional[List[int]] = None,
+        sigmas: Optional[List[float]] = None,
+        **kwargs,
 ):
     """
     Calls the scheduler's `set_timesteps` method and retrieves timesteps from the scheduler after the call. Handles
@@ -216,12 +214,12 @@ class PixArtSigmaPipeline(DiffusionPipeline):
     model_cpu_offload_seq = "text_encoder->transformer->vae"
 
     def __init__(
-        self,
-        tokenizer: T5Tokenizer,
-        text_encoder: T5EncoderModel,
-        vae: AutoencoderKL,
-        transformer: PixArtTransformer2DModel,
-        scheduler: KarrasDiffusionSchedulers,
+            self,
+            tokenizer: T5Tokenizer,
+            text_encoder: T5EncoderModel,
+            vae: AutoencoderKL,
+            transformer: PixArtTransformer2DModel,
+            scheduler: KarrasDiffusionSchedulers,
     ):
         super().__init__()
 
@@ -234,19 +232,19 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
     # Copied from diffusers.pipelines.pixart_alpha.pipeline_pixart_alpha.PixArtAlphaPipeline.encode_prompt with 120->300
     def encode_prompt(
-        self,
-        prompt: Union[str, List[str]],
-        do_classifier_free_guidance: bool = True,
-        negative_prompt: str = "",
-        num_images_per_prompt: int = 1,
-        device: Optional[torch.device] = None,
-        prompt_embeds: Optional[torch.Tensor] = None,
-        negative_prompt_embeds: Optional[torch.Tensor] = None,
-        prompt_attention_mask: Optional[torch.Tensor] = None,
-        negative_prompt_attention_mask: Optional[torch.Tensor] = None,
-        clean_caption: bool = False,
-        max_sequence_length: int = 300,
-        **kwargs,
+            self,
+            prompt: Union[str, List[str]],
+            do_classifier_free_guidance: bool = True,
+            negative_prompt: str = "",
+            num_images_per_prompt: int = 1,
+            device: Optional[torch.device] = None,
+            prompt_embeds: Optional[torch.Tensor] = None,
+            negative_prompt_embeds: Optional[torch.Tensor] = None,
+            prompt_attention_mask: Optional[torch.Tensor] = None,
+            negative_prompt_attention_mask: Optional[torch.Tensor] = None,
+            clean_caption: bool = False,
+            max_sequence_length: int = 300,
+            **kwargs,
     ):
         r"""
         Encodes the prompt into text encoder hidden states.
@@ -306,9 +304,9 @@ class PixArtSigmaPipeline(DiffusionPipeline):
             untruncated_ids = self.tokenizer(prompt, padding="longest", return_tensors="pt").input_ids
 
             if untruncated_ids.shape[-1] >= text_input_ids.shape[-1] and not torch.equal(
-                text_input_ids, untruncated_ids
+                    text_input_ids, untruncated_ids
             ):
-                removed_text = self.tokenizer.batch_decode(untruncated_ids[:, max_length - 1 : -1])
+                removed_text = self.tokenizer.batch_decode(untruncated_ids[:, max_length - 1: -1])
                 logger.warning(
                     "The following part of your input was truncated because T5 can only handle sequences up to"
                     f" {max_length} tokens: {removed_text}"
@@ -395,22 +393,22 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
     # Copied from diffusers.pipelines.pixart_alpha.pipeline_pixart_alpha.PixArtAlphaPipeline.check_inputs
     def check_inputs(
-        self,
-        prompt,
-        height,
-        width,
-        negative_prompt,
-        callback_steps,
-        prompt_embeds=None,
-        negative_prompt_embeds=None,
-        prompt_attention_mask=None,
-        negative_prompt_attention_mask=None,
+            self,
+            prompt,
+            height,
+            width,
+            negative_prompt,
+            callback_steps,
+            prompt_embeds=None,
+            negative_prompt_embeds=None,
+            prompt_attention_mask=None,
+            negative_prompt_attention_mask=None,
     ):
         if height % 8 != 0 or width % 8 != 0:
             raise ValueError(f"`height` and `width` have to be divisible by 8 but are {height} and {width}.")
 
         if (callback_steps is None) or (
-            callback_steps is not None and (not isinstance(callback_steps, int) or callback_steps <= 0)
+                callback_steps is not None and (not isinstance(callback_steps, int) or callback_steps <= 0)
         ):
             raise ValueError(
                 f"`callback_steps` has to be a positive integer but is {callback_steps} of type"
@@ -494,12 +492,14 @@ class PixArtSigmaPipeline(DiffusionPipeline):
         caption = re.sub("<person>", "person", caption)
         # urls:
         caption = re.sub(
-            r"\b((?:https?:(?:\/{1,3}|[a-zA-Z0-9%])|[a-zA-Z0-9.\-]+[.](?:com|co|ru|net|org|edu|gov|it)[\w/-]*\b\/?(?!@)))",  # noqa
+            r"\b((?:https?:(?:\/{1,3}|[a-zA-Z0-9%])|[a-zA-Z0-9.\-]+[.](?:com|co|ru|net|org|edu|gov|it)[\w/-]*\b\/?(?!@)))",
+            # noqa
             "",
             caption,
         )  # regex for urls
         caption = re.sub(
-            r"\b((?:www:(?:\/{1,3}|[a-zA-Z0-9%])|[a-zA-Z0-9.\-]+[.](?:com|co|ru|net|org|edu|gov|it)[\w/-]*\b\/?(?!@)))",  # noqa
+            r"\b((?:www:(?:\/{1,3}|[a-zA-Z0-9%])|[a-zA-Z0-9.\-]+[.](?:com|co|ru|net|org|edu|gov|it)[\w/-]*\b\/?(?!@)))",
+            # noqa
             "",
             caption,
         )  # regex for urls
@@ -527,7 +527,8 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
         # все виды тире / all types of dash --> "-"
         caption = re.sub(
-            r"[\u002D\u058A\u05BE\u1400\u1806\u2010-\u2015\u2E17\u2E1A\u2E3A\u2E3B\u2E40\u301C\u3030\u30A0\uFE31\uFE32\uFE58\uFE63\uFF0D]+",  # noqa
+            r"[\u002D\u058A\u05BE\u1400\u1806\u2010-\u2015\u2E17\u2E1A\u2E3A\u2E3B\u2E40\u301C\u3030\u30A0\uFE31\uFE32\uFE58\uFE63\uFF0D]+",
+            # noqa
             "-",
             caption,
         )
@@ -603,7 +604,7 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
     # Copied from SDXL Img2Img pipeline
     def prepare_latents(
-        self, image, timestep, batch_size, num_images_per_prompt, dtype, device, generator=None, add_noise=True
+            self, image, timestep, batch_size, num_images_per_prompt, dtype, device, generator=None, add_noise=True
     ):
         if not isinstance(image, (torch.Tensor, PIL.Image.Image, list)):
             raise ValueError(
@@ -643,7 +644,7 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
             elif isinstance(generator, list):
                 init_latents = [
-                    retrieve_latents(self.vae.encode(image[i : i + 1]), generator=generator[i])
+                    retrieve_latents(self.vae.encode(image[i: i + 1]), generator=generator[i])
                     for i in range(batch_size)
                 ]
                 init_latents = torch.cat(init_latents, dim=0)
@@ -687,12 +688,15 @@ class PixArtSigmaPipeline(DiffusionPipeline):
     def get_timesteps(self, num_inference_steps, strength, device, denoising_start=None):
         # get the original timestep using init_timestep
         if denoising_start is None:
-            init_timestep = min(int(num_inference_steps * strength), num_inference_steps)
-            t_start = max(num_inference_steps - init_timestep, 0)
+            """ always None in 'extract' func. """
+            init_timestep = min(int(num_inference_steps * strength), num_inference_steps)  # default: 50
+            t_start = max(num_inference_steps - init_timestep, 0)  # default: 1000 - 50 = 950
+            """ (t_start is number of backward-steps from 'num_inference_steps') """
         else:
             t_start = 0
 
-        timesteps = self.scheduler.timesteps[t_start * self.scheduler.order :]
+        timesteps = self.scheduler.timesteps[t_start * self.scheduler.order:]
+        """ (default: [49, ..., 1, 0]) """
 
         # Strength is irrelevant if we directly request a timestep to start at;
         # that is, strength is determined by the denoising_start instead.
@@ -731,35 +735,35 @@ class PixArtSigmaPipeline(DiffusionPipeline):
     @torch.no_grad()
     @replace_example_docstring(EXAMPLE_DOC_STRING)
     def __call__(
-        self,
-        prompt: Union[str, List[str]] = None,
-        negative_prompt: str = "",
-        image: PipelineImageInput = None,
-        strength: float = 0.8,
-        num_inference_steps: int = 20,
-        timesteps: List[int] = None,
-        sigmas: List[float] = None,
-        denoising_start: Optional[float] = None,
-        denoising_end: Optional[float] = None,
-        guidance_scale: float = 4.5,
-        num_images_per_prompt: Optional[int] = 1,
-        height: Optional[int] = None,
-        width: Optional[int] = None,
-        eta: float = 0.0,
-        generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
-        latents: Optional[torch.Tensor] = None,
-        prompt_embeds: Optional[torch.Tensor] = None,
-        prompt_attention_mask: Optional[torch.Tensor] = None,
-        negative_prompt_embeds: Optional[torch.Tensor] = None,
-        negative_prompt_attention_mask: Optional[torch.Tensor] = None,
-        output_type: Optional[str] = "pil",
-        return_dict: bool = True,
-        callback: Optional[Callable[[int, int, torch.Tensor], None]] = None,
-        callback_steps: int = 1,
-        clean_caption: bool = True,
-        use_resolution_binning: bool = True,
-        max_sequence_length: int = 300,
-        **kwargs,
+            self,
+            prompt: Union[str, List[str]] = None,
+            negative_prompt: str = "",
+            image: PipelineImageInput = None,
+            strength: float = 0.8,
+            num_inference_steps: int = 20,
+            timesteps: List[int] = None,
+            sigmas: List[float] = None,
+            denoising_start: Optional[float] = None,
+            denoising_end: Optional[float] = None,
+            guidance_scale: float = 4.5,
+            num_images_per_prompt: Optional[int] = 1,
+            height: Optional[int] = None,
+            width: Optional[int] = None,
+            eta: float = 0.0,
+            generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
+            latents: Optional[torch.Tensor] = None,
+            prompt_embeds: Optional[torch.Tensor] = None,
+            prompt_attention_mask: Optional[torch.Tensor] = None,
+            negative_prompt_embeds: Optional[torch.Tensor] = None,
+            negative_prompt_attention_mask: Optional[torch.Tensor] = None,
+            output_type: Optional[str] = "pil",
+            return_dict: bool = True,
+            callback: Optional[Callable[[int, int, torch.Tensor], None]] = None,
+            callback_steps: int = 1,
+            clean_caption: bool = True,
+            use_resolution_binning: bool = True,
+            max_sequence_length: int = 300,
+            **kwargs,
     ) -> Union[ImagePipelineOutput, Tuple]:
         """
         Function invoked when calling the pipeline for generation.
@@ -1026,35 +1030,35 @@ class PixArtSigmaPipeline(DiffusionPipeline):
 
     @torch.no_grad()
     def np_inference_call(
-        self,
-        prompt: Union[str, List[str]] = None,
-        negative_prompt: str = "",
-        image: PipelineImageInput = None,
-        strength: float = 0.8,
-        num_inference_steps: int = 20,
-        timesteps: List[int] = None,
-        sigmas: List[float] = None,
-        denoising_start: Optional[float] = None,
-        denoising_end: Optional[float] = None,
-        guidance_scale: float = 4.5,
-        num_images_per_prompt: Optional[int] = 1,
-        height: Optional[int] = None,
-        width: Optional[int] = None,
-        eta: float = 0.0,
-        generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
-        latents: Optional[torch.Tensor] = None,
-        prompt_embeds: Optional[torch.Tensor] = None,
-        prompt_attention_mask: Optional[torch.Tensor] = None,
-        negative_prompt_embeds: Optional[torch.Tensor] = None,
-        negative_prompt_attention_mask: Optional[torch.Tensor] = None,
-        output_type: Optional[str] = "pil",
-        return_dict: bool = True,
-        callback: Optional[Callable[[int, int, torch.Tensor], None]] = None,
-        callback_steps: int = 1,
-        clean_caption: bool = True,
-        use_resolution_binning: bool = True,
-        max_sequence_length: int = 300,
-        **kwargs,
+            self,
+            prompt: Union[str, List[str]] = None,
+            negative_prompt: str = "",
+            image: PipelineImageInput = None,
+            strength: float = 0.8,
+            num_inference_steps: int = 20,
+            timesteps: List[int] = None,
+            sigmas: List[float] = None,
+            denoising_start: Optional[float] = None,
+            denoising_end: Optional[float] = None,
+            guidance_scale: float = 4.5,
+            num_images_per_prompt: Optional[int] = 1,
+            height: Optional[int] = None,
+            width: Optional[int] = None,
+            eta: float = 0.0,
+            generator: Optional[Union[torch.Generator, List[torch.Generator]]] = None,
+            latents: Optional[torch.Tensor] = None,
+            prompt_embeds: Optional[torch.Tensor] = None,
+            prompt_attention_mask: Optional[torch.Tensor] = None,
+            negative_prompt_embeds: Optional[torch.Tensor] = None,
+            negative_prompt_attention_mask: Optional[torch.Tensor] = None,
+            output_type: Optional[str] = "pil",
+            return_dict: bool = True,
+            callback: Optional[Callable[[int, int, torch.Tensor], None]] = None,
+            callback_steps: int = 1,
+            clean_caption: bool = True,
+            use_resolution_binning: bool = True,
+            max_sequence_length: int = 300,
+            **kwargs,
     ) -> Union[ImagePipelineOutput, Tuple]:
         """
         Function invoked when calling the pipeline for generation.
